@@ -1,4 +1,4 @@
-package com.smparkworld.parkimagepicker;
+package com.smparkworld.parkimagepickerdemo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.smparkworld.parkimagepicker.ParkImagePicker;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
