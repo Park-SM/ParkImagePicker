@@ -1,7 +1,7 @@
 # ParkImagePicker
 Android simple image picker library.
 
-# preview
+## Preview
 <table border = 0>
     <tr>
       <td><img width = "242" height = "346" src = "https://user-images.githubusercontent.com/47319426/79068135-9ebe5580-7cff-11ea-9ab9-a791f5787ade.jpg"></td>
@@ -20,7 +20,7 @@ Android simple image picker library.
 </table>
 
 
-# How to use
+## How to use
 1. Add maven repository.
 <pre>
 maven {
@@ -33,13 +33,13 @@ implementation 'com.smparkworld.parkimagepicker:parkimagepicker:1.0.0'
 </pre>
 
 
-# Basic example
+## Basic example
 <pre>
 new ParkImagePicker(context).show();
 </pre>
 
 
-# Options
+## Options
 <pre>
 new ParkImagePicker(context)
     .setOnSelectedListener(new ParkImagePicker.OnImageSelectedListener() {
@@ -59,7 +59,7 @@ new ParkImagePicker(context)
 </pre>
 
 
-# License
+## License
 <pre>
 Copyright 2020 ParkSM
 
