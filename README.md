@@ -1,11 +1,34 @@
 # ParkImagePicker
 Android simple image picker library.
 
+# preview
+<table border = 0>
+    <tr>
+      <td><img width = "242" height = "346" src = "https://user-images.githubusercontent.com/47319426/79068135-9ebe5580-7cff-11ea-9ab9-a791f5787ade.jpg"></td>
+      <td></td>
+      <td><img width = "242" height = "346" src = "https://user-images.githubusercontent.com/47319426/79068142-abdb4480-7cff-11ea-99a8-46fae143b018.jpg"></td>
+      <td></td>
+      <td><img width = "242" height = "346" src = "https://user-images.githubusercontent.com/47319426/79068148-b4cc1600-7cff-11ea-94c9-dab22a5a810d.jpg"></td>
+    </tr>
+    <tr>
+        <td align='center'>Demo Activity</td>
+        <td></td>
+        <td align='center'>ParkImagePicker</td>
+        <td></td>
+        <td align='center'>Selected image</td>
+    </tr>
+</table>
+
+
 # How to use
-Add to build.gradle
+1. Add maven repository.
 <pre>
-implementation 'com.google.android.material:material:1.1.0'
-implementation 'com.github.bumptech.glide:glide:4.11.0'
+maven {
+    url 'https://dl.bintray.com/parksm/maven/'
+}
+</pre>
+2. Add to build.gradle
+<pre>
 implementation 'com.smparkworld.parkimagepicker:parkimagepicker:1.0.0'
 </pre>
 
