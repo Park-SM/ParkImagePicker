@@ -14,6 +14,9 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 
@@ -63,7 +66,13 @@ public class ParkImagePickerAdapter extends RecyclerView.Adapter {
             }
         });
 
-        Glide.with(context).load(uri).into(ivImage);
+        Glide.with(ivImage)
+                .load(uri)
+                .priority(Priority.HIGH)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .override(200, 200)
+                .into(ivImage);
     }
 
     @Override
