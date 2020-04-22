@@ -36,13 +36,37 @@ maven {
 implementation 'com.smparkworld.parkimagepicker:parkimagepicker:2.0.2'
 </pre>
 
-
 ## Basic example
 <pre>
 // Default type is multi-picker.
 ParkImagePicker.create(context).start();
 </pre>
 
+## General example
+- Single image picker.
+<pre>
+ParkImagePicker.create(this)
+               .setOnSelectedListener(new ParkImagePicker.OnSingleSelectedListener() {
+                   @Override
+                   public void onImageSelected(String uri) {
+                        // Please enter the code
+                   }
+               })
+               .start();               
+</pre>
+<br> 
+
+- Multi image picker.
+<pre>
+ParkImagePicker.create(this)
+               .setOnSelectedListener(new ParkImagePicker.OnMultiSelectedListener() {
+                   @Override
+                   public void onImageSelected(List&lt;String&gt; uri) {
+                        // Please enter the code
+                   }
+               })
+               .start();           
+</pre>
 
 ## Options
 <pre>
@@ -56,7 +80,7 @@ ParkImagePicker.create(context).start();
 // Use it if you want to use multi-picker. Default type is multi-picker.
 .setOnSelectedListener(new ParkImagePicker.OnMultiSelectedListener() {
     @Override
-    public void onImageSelected(List<String> uri) {
+    public void onImageSelected(List&lt;String&gt; uri) {
     
     }
 })
