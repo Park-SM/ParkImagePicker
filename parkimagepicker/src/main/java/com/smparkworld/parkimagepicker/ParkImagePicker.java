@@ -1,209 +1,130 @@
 package com.smparkworld.parkimagepicker;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.smparkworld.parkimagepicker.presenter.ParkImagePickerPresenter;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 
-import static androidx.core.content.ContextCompat.checkSelfPermission;
+public class ParkImagePicker extends AppCompatActivity implements View.OnClickListener  {
 
-public class ParkImagePicker extends BottomSheetDialog {
+    public static final int REQUEST_CAMERA = 999;
 
-    public static final int PMSS_READ_EXT_STORAGE = 5000;
-    public static final int PMSS_WRITE_EXT_STORAGE = 5001;
-    public static final int PMSS_CAMERA = 5002;
+    private ParkImagePickerPresenter presenter;
 
-    private Context context;
-    private int mNumOfColumns = 3;
-    private int mNumOfVisibleItems;
-    private Cursor mCursor;
-    private ArrayList<String> mURIList;
-    private RecyclerView rvContainer;
-    public static OnImageSelectedListener mListener;
-    public static ImageView mImageView;
+    // Option variables..
+    private static Context mContext;
+    private static OnSingleSelectedListener mSingleListener;
+    private static OnMultiSelectedListener mMultiListener;
+    private static boolean isSingleMode;
+    private static int mNumOfColumns = 3;
+    private static int mTitleBackColor;
+    private static int mTitleFontColor;
+    private static String mTitleText;
+    private static Drawable mTakePictureBtnIcon;
 
-    public ParkImagePicker(Context context) {
-        super(context);
-        setContentView(R.layout.dialog_park_image_picker);
-
-        this.context = context;
-    }
-
-    protected void onCreate(final Bundle savedInstanceState) {
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        setTheme(android.R.style.Theme_NoTitleBar);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_park_image_picker);
+        presenter = new ParkImagePickerPresenter(this, mSingleListener, mMultiListener);
 
-        rvContainer = findViewById(R.id.rvContainer);
+        RecyclerView rvContainer = findViewById(R.id.rvContainer);
+        ImageButton btnDone = findViewById(R.id.btnDone);
 
-        findViewById(R.id.btnTaskPicture).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(context, ParkImagePickerTakePictureActivity.class);
-                context.startActivity(i);
-                dismiss();
-            }
-        });
-        ((NestedScrollView)findViewById(R.id.nsContainer)).setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if (rvContainer == null || rvContainer.getChildCount() == 0) return;
+        findViewById(R.id.btnClose).setOnClickListener(this);
+        findViewById(R.id.btnTaskPicture).setOnClickListener(this);
 
-                int childHeight = rvContainer.getChildAt(0).getMeasuredHeight();
-                int row = rvContainer.getChildCount() / mNumOfColumns;
-                int maxHeight = childHeight * row;
+        if (isSingleMode)
+            btnDone.setVisibility(View.GONE);
+        else
+            btnDone.setOnClickListener(this);
 
-                if (scrollY > rvContainer.getHeight() * 0.5)
-                    new LoadThread(mCursor, mNumOfVisibleItems, mURIList).start();
-            }
-        });
+        if (!presenter.loadImages(rvContainer, mNumOfColumns))
+            Log.v("ParkImagePicker error!", "Failed to load images from device");
 
-        if (mNumOfColumns <= 0) mNumOfColumns = 1;
-        if (!loadImageFromDevice((RecyclerView)findViewById(R.id.rvContainer))) dismiss();
+        if (mTitleBackColor != 0)
+            findViewById(R.id.llTitleBack).setBackgroundColor(mTitleBackColor);
+        if (mTitleFontColor != 0)
+            ((TextView)findViewById(R.id.tvTitle)).setTextColor(mTitleFontColor);
+        if (mTitleText != null)
+            ((TextView)findViewById(R.id.tvTitle)).setText(mTitleText);
+        if (mTakePictureBtnIcon != null)
+            ((ImageButton)findViewById(R.id.btnTaskPicture)).setImageDrawable(mTakePictureBtnIcon);
+
+        overridePendingTransition(R.anim.begin, R.anim.holding);
     }
 
-    private boolean loadImageFromDevice(RecyclerView rvContainer) {
-        if (rvContainer == null) {
-            Log.v("ParkImagePicker error!", "The Container return null.");
-            return false;
-        }
-        if (!requestPermission()) {
-            Log.v("ParkImagePicker error!", "Permission denied: READ_EXTERNAL_STORAGE or WRITE_EXTERNAL_STORAGE or CAMERA");
-            return false;
-        }
-        if (mCursor == null) {
-            mCursor = context.getContentResolver().query(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"
-            );
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-            // Check if the cursor is invalid.
-            if (mCursor == null || !mCursor.moveToFirst()) {
-                Log.v("ParkImagePicker error!", "Failed to create cursor.");
-                return false;
-            }
-        }
 
-        mURIList = new ArrayList<String>();
-        new LoadThread(mCursor, mNumOfVisibleItems, mURIList).start();
-        return true;
+        if (requestCode == REQUEST_CAMERA)
+            presenter.takePictureResult(resultCode);
     }
 
-    private boolean requestPermission() {
-        boolean ret = true;
-        // android.permission.READ_EXTERNAL_STORAGE
-        if (checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity)context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                ret = false;
-            } else {
-                ActivityCompat.requestPermissions((Activity)context, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, PMSS_READ_EXT_STORAGE);
-            }
-        }
-        // android.permission.WRITE_EXTERNAL_STORAGE
-        if (checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity)context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                ret = false;
-            } else {
-                ActivityCompat.requestPermissions((Activity)context, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PMSS_WRITE_EXT_STORAGE);
-            }
-        }
-        // android.permission.CAMERA
-        if (checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity)context, Manifest.permission.CAMERA)) {
-                ret = false;
-            } else {
-                ActivityCompat.requestPermissions((Activity)context, new String[] {Manifest.permission.CAMERA}, PMSS_CAMERA);
-            }
-        }
-        return ret;
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.holding, R.anim.end);
     }
 
-    private synchronized void loadImages(Cursor cursor, int count, ArrayList<String> modelList) {
-        int fieldIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-        int maxCount = count + 100;
-        while (count++ < maxCount && cursor.moveToNext())
-            modelList.add(Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getString(fieldIndex)).toString());
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
 
-        Bundle b = new Bundle();
-        b.putInt("mNumOfVisibleItems", --count);
+        if (id == R.id.btnClose) {
+            onBackPressed();
 
-        LoadHandler handler = new LoadHandler();
-        Message m = handler.obtainMessage();
-        m.setData(b);
-        handler.sendMessage(m);
-    }
+        } else if (id == R.id.btnTaskPicture) {
+            presenter.takePicture(REQUEST_CAMERA);
 
-    public class LoadThread extends Thread {
-
-        private Cursor cursor;
-        private int count;
-        private ArrayList<String> modelList;
-
-        public LoadThread(Cursor cursor, int count, ArrayList<String> modelList) {
-            this.cursor = cursor;
-            this.count = count;
-            this.modelList = modelList;
-        }
-
-        @Override
-        public void run() {
-            loadImages(cursor, count, modelList);
-        }
-    }
-
-    public class LoadHandler extends Handler {
-
-        public LoadHandler() {
-            super(Looper.getMainLooper());
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            mNumOfVisibleItems = msg.getData().getInt("mNumOfVisibleItems");
-            rvContainer.setLayoutManager(new GridLayoutManager(context, mNumOfColumns));
-            rvContainer.setAdapter(new ParkImagePickerAdapter(context, ParkImagePicker.this, mURIList));
+        } else if (id == R.id.btnDone) {
+            presenter.completeMultiMode();
         }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // option methods../////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    public interface OnImageSelectedListener {
-        void onImageSelected(String uri);
+    public interface OnSingleSelectedListener {
+        void onImageSelected(@NonNull String uri);
     }
 
-    public ParkImagePicker setOnSelectedListener(OnImageSelectedListener listener) {
-        mListener = listener;
+    public interface OnMultiSelectedListener {
+        void onImageSelected(@NonNull List<String> uri);
+    }
+
+    public static ParkImagePicker create(Context mContext) {
+        ParkImagePicker.mContext = mContext;
+        return new ParkImagePicker();
+    }
+
+    public ParkImagePicker setOnSelectedListener(OnSingleSelectedListener listener) {
+        mSingleListener = listener;
+        mMultiListener = null;
+        isSingleMode = true;
         return this;
     }
 
-    public ParkImagePicker setOnSelectedImageView(ImageView iv) {
-        mImageView = iv;
+    public ParkImagePicker setOnSelectedListener(OnMultiSelectedListener listener) {
+        mSingleListener = null;
+        mMultiListener = listener;
+        isSingleMode = false;
         return this;
     }
 
@@ -217,32 +138,32 @@ public class ParkImagePicker extends BottomSheetDialog {
     }
 
     public ParkImagePicker setNumOfColumns(int column) {
-        mNumOfColumns = column;
+        mNumOfColumns = (column <= 0) ? 1 : column;
         return this;
     }
 
     public ParkImagePicker setTitleBackgroundColor(int colorId) {
-        findViewById(R.id.llTitleBack).setBackgroundColor(context.getResources().getColor(colorId));
+        mTitleBackColor = mContext.getResources().getColor(colorId);
         return this;
     }
 
     public ParkImagePicker setTitleFontColor(int colorId) {
-        ((TextView)findViewById(R.id.tvTitle)).setTextColor(context.getResources().getColor(colorId));
+        mTitleFontColor = mContext.getResources().getColor(colorId);
         return this;
     }
 
     public ParkImagePicker setTitle(String title) {
-        ((TextView)findViewById(R.id.tvTitle)).setText(title);
+        mTitleText = title;
         return this;
     }
 
     public ParkImagePicker setTaskPictureBtnIcon(int drawableId) {
-        ((ImageButton)findViewById(R.id.btnTaskPicture)).setImageDrawable(context.getResources().getDrawable(drawableId));
+        mTakePictureBtnIcon = mContext.getResources().getDrawable(drawableId);
         return this;
     }
 
-    public void show() {
-        super.show();
+    public void start() {
+        mContext.startActivity(new Intent(mContext, this.getClass()));
     }
 
     public static void clearCache(Context context) {

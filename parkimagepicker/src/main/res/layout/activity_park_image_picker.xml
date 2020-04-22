@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/imagePickerBack" >
+
+    <LinearLayout
+        android:id="@+id/llTitleBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/imagePickerTitleBack" >
+
+        <ImageButton
+            android:id="@+id/btnClose"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_expand_more_black_24dp" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="15dp"
+            android:text="사진선택"
+            android:textColor="@color/imagePickerTitleFont" />
+
+        <ImageButton
+            android:id="@+id/btnTaskPicture"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_photo_camera_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/btnDone"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_done_black_24dp"/>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical" />
+
+
+</LinearLayout>

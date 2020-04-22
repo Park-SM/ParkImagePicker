@@ -10,8 +10,6 @@
     android:required="false" />
 
     <application>
-        <activity android:name=".ParkImagePickerTakePictureActivity" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -21,7 +19,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/park_file_path" />
         </provider>
-
+        <activity android:name="com.smparkworld.parkimagepicker.ParkImagePicker" />
     </application>
 
 </manifest>

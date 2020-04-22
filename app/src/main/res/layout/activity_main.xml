@@ -19,18 +19,17 @@
             android:background="#000000" />
 
         <Button
-            android:id="@+id/btnActivityMain_callImagePicker"
+            android:id="@+id/btnActivityMain_callSinglePicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Call ImagePicker"/>
+            android:text="Call Single ImagePicker"/>
 
-        <TextView
-            android:id="@+id/tvActivityMain_selectedURI"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btnActivityMain_callMultiPicker"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="15dp"
-            android:text="Selected URI"/>
+            android:layout_marginTop="20dp"
+            android:text="Call Multi ImagePicker"/>
 
         <Button
             android:id="@+id/btnActivityMain_clearCache"
