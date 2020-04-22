@@ -10,14 +10,22 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
+    <LinearLayout
+        android:id="@+id/llSelectedLayer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/imagePickerSelectedLayer"
+        android:orientation="horizontal" />
+
     <TextView
         android:id="@+id/tvSelectedIndex"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:padding="3dp"
+        android:padding="5dp"
         android:text="0"
+        android:textSize="10dp"
         android:textColor="@color/imagePickerTitleFont"
-        android:background="@drawable/shape_selected_index" />
+        android:background="@color/imagePickerTitleBack" />
 
 </FrameLayout>

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -70,6 +71,7 @@ public class ParkImagePickerAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
 
         ImageView ivImage = ((ViewHolder)holder).imageView;
+        final LinearLayout llSelectedLayer = ((ViewHolder)holder).selectedLayer;
         final TextView tvSelectedIndex = ((ViewHolder)holder).selectedIndex;
 
         final Image image = mModelList.get(position);
@@ -87,17 +89,17 @@ public class ParkImagePickerAdapter extends RecyclerView.Adapter {
                     if (!image.isSelected()) {
                         mSelectedURIList.add(image);
                         image.setSelectedIndex(mSelectedURIList.size());
-                        setVisibleSelection(tvSelectedIndex, image);
+                        setVisibleSelection(tvSelectedIndex, llSelectedLayer, image);
                     } else {
                         mSelectedURIList.remove(image);
                         image.setSelected(false);
-                        setVisibleSelection(tvSelectedIndex, image);
+                        setVisibleSelection(tvSelectedIndex, llSelectedLayer, image);
                         sortSelectedList();
                     }
                 }
             }
         });
-        setVisibleSelection(tvSelectedIndex, image);
+        setVisibleSelection(tvSelectedIndex, llSelectedLayer, image);
 
         Glide.with(ivImage)
                 .load(uri)
@@ -115,12 +117,14 @@ public class ParkImagePickerAdapter extends RecyclerView.Adapter {
         return mModelList.size();
     }
 
-    private void setVisibleSelection(TextView tvSelectedIndex, Image image) {
+    private void setVisibleSelection(TextView tvSelectedIndex, LinearLayout llSelectedLayer, Image image) {
         if (image.isSelected()) {
             tvSelectedIndex.setVisibility(View.VISIBLE);
+            llSelectedLayer.setVisibility(View.VISIBLE);
             tvSelectedIndex.setText(Integer.toString(image.getSelectedIndex()));
         } else {
             tvSelectedIndex.setVisibility(View.GONE);
+            llSelectedLayer.setVisibility(View.GONE);
         }
     }
 
@@ -136,13 +140,22 @@ public class ParkImagePickerAdapter extends RecyclerView.Adapter {
     private class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imageView;
+        public LinearLayout selectedLayer;
         public TextView selectedIndex;
 
         public ViewHolder(View v) {
             super(v);
             imageView = v.findViewById(R.id.ivImage);
+            selectedLayer = v.findViewById(R.id.llSelectedLayer);
             selectedIndex = v.findViewById(R.id.tvSelectedIndex);
 
+            int fontColor = ((ParkImagePicker)mContext).getTitleFontColor();
+            int backColor = ((ParkImagePicker)mContext).getTitleBackColor();
+
+            if (fontColor != 0)
+                selectedIndex.setTextColor(fontColor);
+            if (backColor != 0)
+                selectedIndex.setBackgroundColor(backColor);
         }
     }
 

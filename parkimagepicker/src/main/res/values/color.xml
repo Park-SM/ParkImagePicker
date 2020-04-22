@@ -3,6 +3,7 @@
     <color name="imagePickerBack">#FFFFFF</color>
     <color name="imagePickerTitleFont">#FFFFFF</color>
     <color name="imagePickerTitleBack">#FFB5B5</color>
+    <color name="imagePickerSelectedLayer">#88000000</color>
 
     <color name="defaultImageViewBack">#000000</color>
 </resources>

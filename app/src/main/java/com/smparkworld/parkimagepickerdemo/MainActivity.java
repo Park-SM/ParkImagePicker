@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         })
                         .setNumOfColumns(3)
                         .setTitle("이미지선택")
-                        .setTitleBackgroundColor(R.color.colorAccent)
                         .start();
                 break;
 
@@ -58,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         })
                         .setNumOfColumns(3)
                         .setTitle("이미지선택")
-                        .setTitleBackgroundColor(R.color.colorAccent)
                         .start();
                 break;
 
