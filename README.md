@@ -33,7 +33,7 @@ maven {
 </pre>
 2. Add to build.gradle
 <pre>
-implementation 'com.smparkworld.parkimagepicker:parkimagepicker:2.0.2'
+implementation 'com.smparkworld.parkimagepicker:parkimagepicker:2.0.3'
 </pre>
 
 ## Basic example
