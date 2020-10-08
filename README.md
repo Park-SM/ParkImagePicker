@@ -90,7 +90,6 @@ ParkImagePicker.create(this)
 .setTitle("Sample title")
 .setTitleFontColor(R.color.?)
 .setTitleBackgroundColor(R.color.?)
-.start();
 </pre>
 
 
