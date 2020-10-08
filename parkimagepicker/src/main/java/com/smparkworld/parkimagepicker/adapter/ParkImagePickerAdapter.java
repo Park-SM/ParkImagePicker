@@ -35,12 +35,12 @@ public class ParkImagePickerAdapter extends RecyclerView.Adapter {
     private ParkImagePicker.OnSingleSelectedListener mListener;
     private boolean isLoading;
 
-    public ParkImagePickerAdapter(Context mContext, ArrayList<Image> mSelectedURIList,
-                                  ParkImagePicker.OnSingleSelectedListener mListener) {
-        this.mContext = mContext;
-        this.mModelList = new ArrayList<Image>();
-        this.mSelectedURIList = mSelectedURIList;
-        this.mListener = mListener;
+    public ParkImagePickerAdapter(Context context, ArrayList<Image> selectedURIList,
+                                  ParkImagePicker.OnSingleSelectedListener listener) {
+        mContext = context;
+        mModelList = new ArrayList<Image>();
+        mSelectedURIList = selectedURIList;
+        mListener = listener;
 
         mCursor = mContext.getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,

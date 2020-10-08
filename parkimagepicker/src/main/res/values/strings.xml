@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">parkimagepicker</string>
+    <string name="app_name">ParkImagePicker</string>
+    <string name="permissionDenied_cmd">앱의 카메라 혹은 갤러리의 권한이 거부되어 있습니다. 설정에서 앱의 권한을 승인해주세요.</string>
+    <string name="permissionDenied_readWrite">저장공간 권한이 거부되어 있습니다.\n설정에서 앱의 권한을 승인해주세요.</string>
 </resources>

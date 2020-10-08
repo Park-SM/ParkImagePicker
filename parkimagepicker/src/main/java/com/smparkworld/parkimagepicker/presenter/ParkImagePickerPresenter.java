@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -16,6 +17,7 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.smparkworld.parkimagepicker.R;
 import com.smparkworld.parkimagepicker.adapter.ParkImagePickerAdapter;
 import com.smparkworld.parkimagepicker.domain.Image;
 import com.smparkworld.parkimagepicker.ParkImagePicker;
@@ -30,9 +32,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class ParkImagePickerPresenter {
 
-    public static final int PMSS_READ_EXT_STORAGE = 5000;
-    public static final int PMSS_WRITE_EXT_STORAGE = 5001;
-    public static final int PMSS_CAMERA = 5002;
+    public static final int REQUEST_PERMISSION_CODE = 5000;
 
     private Context mContext;
     private ParkImagePicker.OnSingleSelectedListener mSingleListener;
@@ -74,32 +74,26 @@ public class ParkImagePickerPresenter {
     }
 
     public boolean requestPermission() {
-        boolean ret = true;
-        // android.permission.READ_EXTERNAL_STORAGE
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(((Activity)mContext), Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                ret = false;
+        String[] permissions = new String[] {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA
+        };
+
+        if ( ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ) {
+
+            if ( ActivityCompat.shouldShowRequestPermissionRationale(((Activity)mContext), Manifest.permission.READ_EXTERNAL_STORAGE)
+                    || ActivityCompat.shouldShowRequestPermissionRationale(((Activity)mContext), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    || ActivityCompat.shouldShowRequestPermissionRationale(((Activity)mContext), Manifest.permission.CAMERA) ) {
+                Toast.makeText(mContext, R.string.permissionDenied_cmd, Toast.LENGTH_SHORT).show();
             } else {
-                ActivityCompat.requestPermissions(((Activity)mContext), new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, PMSS_READ_EXT_STORAGE);
+                ActivityCompat.requestPermissions(((Activity)mContext), permissions, REQUEST_PERMISSION_CODE);
             }
+            return false;
         }
-        // android.permission.WRITE_EXTERNAL_STORAGE
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(((Activity)mContext), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                ret = false;
-            } else {
-                ActivityCompat.requestPermissions(((Activity)mContext), new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PMSS_WRITE_EXT_STORAGE);
-            }
-        }
-        // android.permission.CAMERA
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(((Activity)mContext), Manifest.permission.CAMERA)) {
-                ret = false;
-            } else {
-                ActivityCompat.requestPermissions(((Activity)mContext), new String[] {Manifest.permission.CAMERA}, PMSS_CAMERA);
-            }
-        }
-        return ret;
+        return true;
     }
 
     public void takePictureResult(int resultCode) {
@@ -116,6 +110,11 @@ public class ParkImagePickerPresenter {
     }
 
     public boolean takePicture(int requestCode) {
+        if (!requestPermission()) {
+            Log.v("ParkImagePicker error!", "Permission denied: READ_EXTERNAL_STORAGE or WRITE_EXTERNAL_STORAGE or CAMERA");
+            return false;
+        }
+
         try {
             Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (i.resolveActivity(mContext.getPackageManager()) == null) {

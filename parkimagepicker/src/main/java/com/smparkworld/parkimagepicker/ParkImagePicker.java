@@ -1,16 +1,22 @@
 package com.smparkworld.parkimagepicker;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.smparkworld.parkimagepicker.presenter.ParkImagePickerPresenter;
@@ -22,7 +28,9 @@ public class ParkImagePicker extends AppCompatActivity implements View.OnClickLi
 
     public static final int REQUEST_CAMERA = 999;
 
-    private ParkImagePickerPresenter presenter;
+    private ParkImagePickerPresenter mPresenter;
+    private RecyclerView rvContainer;
+    private TextView tvPermissionNotice;
 
     // Option variables..
     private static Context mContext;
@@ -40,21 +48,21 @@ public class ParkImagePicker extends AppCompatActivity implements View.OnClickLi
         setTheme(android.R.style.Theme_NoTitleBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_park_image_picker);
-        presenter = new ParkImagePickerPresenter(this, mSingleListener, mMultiListener);
+        mPresenter = new ParkImagePickerPresenter(this, mSingleListener, mMultiListener);
 
-        RecyclerView rvContainer = findViewById(R.id.rvContainer);
+        rvContainer = findViewById(R.id.rvContainer);
+        tvPermissionNotice = findViewById(R.id.tvPermissionNotice);
         ImageButton btnDone = findViewById(R.id.btnDone);
-
-        findViewById(R.id.btnClose).setOnClickListener(this);
-        findViewById(R.id.btnTaskPicture).setOnClickListener(this);
 
         if (isSingleMode)
             btnDone.setVisibility(View.GONE);
         else
             btnDone.setOnClickListener(this);
 
-        if (!presenter.loadImages(rvContainer, mNumOfColumns))
+        if (!mPresenter.loadImages(rvContainer, mNumOfColumns)) {
+            showPermissionNotice(true);
             Log.v("ParkImagePicker error!", "Failed to load images from device");
+        }
 
         if (mTitleBackColor != 0)
             findViewById(R.id.llTitleBack).setBackgroundColor(mTitleBackColor);
@@ -65,6 +73,9 @@ public class ParkImagePicker extends AppCompatActivity implements View.OnClickLi
         if (mTakePictureBtnIcon != null)
             ((ImageButton)findViewById(R.id.btnTaskPicture)).setImageDrawable(mTakePictureBtnIcon);
 
+        findViewById(R.id.btnClose).setOnClickListener(this);
+        findViewById(R.id.btnTaskPicture).setOnClickListener(this);
+
         overridePendingTransition(R.anim.begin, R.anim.holding);
     }
 
@@ -72,9 +83,24 @@ public class ParkImagePicker extends AppCompatActivity implements View.OnClickLi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
         if (requestCode == REQUEST_CAMERA)
-            presenter.takePictureResult(resultCode);
+            mPresenter.takePictureResult(resultCode);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean ret = true;
+        for (int result : grantResults) {
+            if (result == PackageManager.PERMISSION_DENIED) ret = false;
+        }
+
+        if (grantResults.length > 0 && ret) {
+            if (!mPresenter.loadImages(rvContainer, mNumOfColumns))
+                showPermissionNotice(true);
+            else
+                showPermissionNotice(false);
+        }
     }
 
     @Override
@@ -86,15 +112,25 @@ public class ParkImagePicker extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         int id = v.getId();
-
         if (id == R.id.btnClose) {
             onBackPressed();
-
         } else if (id == R.id.btnTaskPicture) {
-            presenter.takePicture(REQUEST_CAMERA);
-
+            if (!mPresenter.takePicture(REQUEST_CAMERA))
+                showPermissionNotice(true);
+            else
+                showPermissionNotice(false);
         } else if (id == R.id.btnDone) {
-            presenter.completeMultiMode();
+            mPresenter.completeMultiMode();
+        }
+    }
+
+    private void showPermissionNotice(boolean isShow) {
+        if (isShow) {
+            rvContainer.setVisibility(View.GONE);
+            tvPermissionNotice.setVisibility(View.VISIBLE);
+        } else {
+            rvContainer.setVisibility(View.VISIBLE);
+            tvPermissionNotice.setVisibility(View.GONE);
         }
     }
 
