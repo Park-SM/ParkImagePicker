@@ -4,23 +4,28 @@ Android simple image picker library.
 ## Preview
 <table border = 0>
     <tr>
-      <td><img width = "242" height = "346" src = "https://user-images.githubusercontent.com/47319426/80021797-081b4100-8516-11ea-853f-c3caea901d39.jpg"></td>
+      <td><img width = "300" src = "https://user-images.githubusercontent.com/47319426/80021797-081b4100-8516-11ea-853f-c3caea901d39.jpg"></td>
       <td></td>
-      <td><img width = "242" height = "346" src = "https://user-images.githubusercontent.com/47319426/80021822-15383000-8516-11ea-9594-e1137f7c964f.jpg"></td>
-      <td></td>
-      <td><img width = "242" height = "346" src = "https://user-images.githubusercontent.com/47319426/80021850-208b5b80-8516-11ea-8e72-ff379d1578b8.jpg"></td>
-      <td></td>
-      <td><img width = "242" height = "346" src = "https://user-images.githubusercontent.com/47319426/80021868-284b0000-8516-11ea-9cfc-142726b70ce1.jpg"></td>
+      <td><img width = "300" src = "https://user-images.githubusercontent.com/47319426/80021868-284b0000-8516-11ea-9cfc-142726b70ce1.jpg"></td>        
     </tr>
     <tr>
         <td align='center'>Demo Activity</td>
         <td></td>
-        <td align='center'>ParkImagePicker(Single)</td>
-        <td></td>
-        <td align='center'>ParkImagePicker(Multi)</td>
-        <td></td>
         <td align='center'>Result view</td>
     </tr>
+</table>
+<table border = 0>
+    <tr>
+      <td><img width = "300" src = "https://user-images.githubusercontent.com/47319426/80021822-15383000-8516-11ea-9594-e1137f7c964f.jpg"></td>
+      <td></td>
+      <td><img width = "300" src = "https://user-images.githubusercontent.com/47319426/80021850-208b5b80-8516-11ea-8e72-ff379d1578b8.jpg"></td>
+    </tr>
+    <tr>
+        <td align='center'>ParkImagePicker(Multi)</td>
+        <td></td>
+        <td align='center'>ParkImagePicker(Single)</td>
+    </tr>
+    
 </table>
 
 
